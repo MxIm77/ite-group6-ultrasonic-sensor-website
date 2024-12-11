@@ -31,8 +31,8 @@
         <p 
             v-if="rotationResponse" 
             :class="{
-                'response-success': rotationStatus === 'ok',
-                'response-error': rotationStatus !== 'ok',
+                'response-success': rotationStatus === 200,
+                'response-error': rotationStatus !== 200,
             }"
             style="font-weight: 700;"
         >
@@ -49,7 +49,7 @@ export default {
         return {
             rotationResponse: null, // Default text
             rotationStatus: null,   // Status from the API response
-            rotationAngle: 95,
+            rotationAngle: 90,
             socket: null,
             distance: 0, // Raw distance from the WebSocket
             distanceUnit: 'cm', // Current unit of measurement (cm or m)
@@ -67,8 +67,12 @@ export default {
         async fetchRotation(action) {
             try {
                 const response = await axios.get(`http://192.168.10.112:4040/${action}`);
-                this.rotationResponse = response.data.message; // Update response text
-                this.rotationStatus = response.data.status.toLowerCase(); // Update status (e.g., 'ok')
+                // console.log(response);
+                this.rotationResponse = response.data.message;
+                this.rotationAngle = response.data.degree;
+                this.rotationStatus = response.status;
+                // this.rotationResponse = response.data; // Update response text
+                // this.rotationStatus = response.data.status.toLowerCase(); // Update status (e.g., 'ok')
             } catch (error) {
                 console.error('Error fetching rotation:', error);
                 this.rotationResponse = 'Failed to fetch rotation data.';
